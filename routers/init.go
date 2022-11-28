@@ -8,7 +8,7 @@ import (
 	"github.com/covergates/covergates/routers/web"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/cookie"
+	"github.com/gin-contrib/sessions/memstore"
 	"github.com/gin-gonic/gin"
 )
 
@@ -34,7 +34,7 @@ type Routers struct {
 
 // RegisterRoutes for Gin engine
 func (r *Routers) RegisterRoutes(e *gin.Engine) {
-	store := cookie.NewStore([]byte(r.Config.Server.Secret))
+	store := memstore.NewStore([]byte(r.Config.Server.Secret))
 	e.Use(sessions.Sessions("codecover", store))
 	e.Use(cors.Default())
 
