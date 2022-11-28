@@ -116,7 +116,7 @@ export default class RecentCommits extends Vue {
     return {
       name: 'report-overview',
       query: {
-        ref: commit.sha
+        gitref: commit.sha
       }
     };
   }

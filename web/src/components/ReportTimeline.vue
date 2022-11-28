@@ -88,7 +88,7 @@ export default class ReportTimeline extends Vue {
     return {
       name: 'report-overview',
       query: {
-        ref: report.commit
+        gitref: report.commit
       }
     };
   }

@@ -27,7 +27,7 @@ export function fetchCurrentRepository(store: Store<RootState>): RouteHandler {
             Actions.FETCH_REPORT_CURRENT,
             {
               ReportID: (store.state as State).repository.current?.ReportID,
-              Ref: to.query.ref
+              Ref: to.query.gitref
             } as FetchReportOption
           ).then(() => {
             fetchReportHistory(store);
@@ -50,7 +50,7 @@ export function fetchCurrentRepository(store: Store<RootState>): RouteHandler {
 
 export function fetchNewRepository(store: Store<RootState>): RouteHandler {
   return (to, from, next) => {
-    if (from.name !== null && to.query.ref !== from.query.ref && to.meta.checkRenew) {
+    if (from.name !== null && to.query.gitref !== from.query.gitref && to.meta.checkRenew) {
       fetchCurrentRepository(store)(to, from, next);
     } else {
       next();

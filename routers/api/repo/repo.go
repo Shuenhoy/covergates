@@ -277,7 +277,7 @@ func HandleGetFiles(service core.SCMService) gin.HandlerFunc {
 // @Param namespace path string true "Namespace"
 // @Param name path string true "name"
 // @Param path path string true "file path"
-// @Param ref query string false "specify git ref, default main branch"
+// @Param gitref query string false "specify git ref, default main branch"
 // @Success 200 {string} string "file content"
 // @Router /repos/{scm}/{namespace}/{name}/content/{path} [get]
 func HandleGetFileContent(service core.SCMService) gin.HandlerFunc {
@@ -388,7 +388,7 @@ func HandleUpdateSetting(store core.RepoStore, service core.SCMService) gin.Hand
 // @Param scm path string true "SCM"
 // @Param namespace path string true "Namespace"
 // @Param name path string true "name"
-// @Param ref query string false "branch to list commits from"
+// @Param gitref query string false "branch to list commits from"
 // @Success 200 {object} []core.Commit commits
 // @Router /repos/{scm}/{namespace}/{name}/commits [get]
 func HandleListCommits(service core.SCMService) gin.HandlerFunc {
@@ -406,10 +406,10 @@ func HandleListCommits(service core.SCMService) gin.HandlerFunc {
 		}
 		ctx := c.Request.Context()
 		var commits []*core.Commit
-		if c.Query("ref") == "" {
+		if c.Query("gitref") == "" {
 			commits, err = client.Git().ListCommits(ctx, user, repo.FullName())
 		} else {
-			commits, err = client.Git().ListCommitsByRef(ctx, user, repo.FullName(), c.Query("ref"))
+			commits, err = client.Git().ListCommitsByRef(ctx, user, repo.FullName(), c.Query("gitref"))
 		}
 		if err != nil {
 			c.Error(err)
@@ -450,7 +450,7 @@ func HandleListBranches(service core.SCMService) gin.HandlerFunc {
 
 func getRef(c *gin.Context, client core.Client, user *core.User) (string, error) {
 	repoName := fmt.Sprintf("%s/%s", c.Param("namespace"), c.Param("name"))
-	ref := c.Query("ref")
+	ref := c.Query("gitref")
 	if ref == "" {
 		repo, err := client.Repositories().Find(c.Request.Context(), user, repoName)
 		if err != nil {

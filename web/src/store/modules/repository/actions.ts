@@ -194,7 +194,7 @@ export function fetchRepositoryCommits<S extends RepoState, R extends RootState>
     const { SCM, Name, NameSpace } = (repo as Repository);
     Axios.get<Commit[]>(
       `${base}/api/v1/repos/${SCM}/${NameSpace}/${Name}/commits`,
-      { params: { ref: ref } })
+      { params: { gitref: ref } })
       .then(response => {
         context.commit(Mutations.SET_REPOSITORY_COMMITS, response.data);
       })

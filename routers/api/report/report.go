@@ -124,7 +124,7 @@ func HandleRepo(store core.RepoStore) gin.HandlerFunc {
 
 type getOptions struct {
 	Latest bool   `form:"latest"`
-	Ref    string `form:"ref"`
+	Ref    string `form:"gitref"`
 }
 
 // HandleGet for the report id
