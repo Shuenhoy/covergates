@@ -168,15 +168,20 @@ func (store *UserStore) UpdateRepositories(user *core.User, repositories []*core
 	if err := session.Where(&User{Login: user.Login}).First(u).Error; err != nil {
 		return err
 	}
-	userRepos := make([]*Repo, 0, len(repositories))
+	u.Repositories = []*Repo{}
+
 	for _, repo := range repositories {
 		r := &Repo{}
 		if err := session.Where(&Repo{URL: repo.URL}).First(r).Error; err != nil {
 			return err
 		}
-		userRepos = append(userRepos, r)
+		u.Repositories = append(u.Repositories, r)
+		if err := session.Save(u).Error; err != nil {
+			return err
+		}
 	}
-	return session.Model(u).Association("Repositories").Replace(userRepos)
+	return nil
+
 }
 
 func (u *User) toCoreUser() *core.User {
