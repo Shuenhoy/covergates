@@ -1,9 +1,11 @@
 FROM golang:alpine AS build
-
 RUN apk --update add musl-dev
 RUN apk --update add util-linux-dev
 RUN apk --update add gcc g++
 WORKDIR /go/src/github.com/covergates/covergates
+COPY go.mod ./
+COPY go.sum ./
+RUN go mod download
 COPY . .
 RUN CGO_ENABLED=1 GOOS=linux go build -v -o covergates ./cmd/server
 FROM alpine
