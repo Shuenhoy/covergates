@@ -30,3 +30,4 @@ pnpm-debug.log*
 
 # jest
 coverage/
+web_gen.go
