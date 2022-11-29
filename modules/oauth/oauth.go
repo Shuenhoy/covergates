@@ -52,6 +52,11 @@ func NewService(
 
 func newOAuthServer(config *config.Config, oauthStore core.OAuthStore) *server.Server {
 	manager := manage.NewDefaultManager()
+
+	manager.SetClientTokenCfg(&manage.Config{
+		AccessTokenExp: 0,
+	})
+
 	manager.MustTokenStorage(
 		&tokenStore{
 			store: oauthStore,
