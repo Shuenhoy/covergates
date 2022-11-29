@@ -28,7 +28,7 @@ import ReportMixin from '@/mixins/report';
 export default class ReportSource extends ((Mixins(
   ReportMixin
 ) as typeof Vue) && ReportMixin) {
-  hitMap = {} as { [key: number]: boolean };
+  hitMap = {} as { [key: number]: 'statement-hit' | 'statement-miss' };
 
   mounted() {
     this.updateHitMap();
@@ -56,13 +56,13 @@ export default class ReportSource extends ((Mixins(
     const file = this.findSourceFile(this.filePath);
     if (file) {
       for (const hit of file.StatementHits) {
-        this.hitMap[hit.LineNumber] = hit.Hits > 0;
+        this.hitMap[hit.LineNumber] = hit.Hits > 0 ? 'statement-hit' : 'statement-miss';
       }
     }
   }
 
   hitClass(i: number): string {
-    return this.hitMap[i] ? 'statement-hit' : 'statement-miss';
+    return this.hitMap[i];
   }
 
   @Watch('report')
@@ -94,5 +94,8 @@ table {
 
 .statement-hit {
   background-color: $hit-statement-color;
+}
+.statement-miss {
+  background-color: $miss-statement-color;
 }
 </style>
