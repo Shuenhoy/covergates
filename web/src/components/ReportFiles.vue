@@ -83,31 +83,19 @@ export default class ReportFiles extends ((Mixins(ReportMixin) as typeof Vue) &&
       return [];
     }
     const info = {} as { [key: string]: FileInfo };
-    if (this.report.files) {
-      for (const file of this.report.files) {
-        info[file] = {
-          name: file,
-          coverage: 0,
-          hits: 0
-        };
-      }
-    }
+
     for (const name in this.$sourceFiles) {
       const file = this.$sourceFiles[name];
       const coverage = Math.round(file.StatementCoverage * 10000) / 100;
       const hitLine = file.StatementHits.filter(hit => {
         return hit.Hits > 0;
       }).length;
-      if (info[file.Name]) {
-        info[file.Name].coverage = coverage;
-        info[file.Name].hits = hitLine;
-      } else {
-        info[file.Name] = {
-          name: file.Name,
-          coverage: coverage,
-          hits: hitLine
-        };
-      }
+
+      info[file.Name] = {
+        name: file.Name,
+        coverage: coverage,
+        hits: hitLine
+      };
     }
     return Object.values(info).sort((a, b) => {
       return a.name > b.name ? 1 : -1;
