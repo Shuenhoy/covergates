@@ -97,8 +97,12 @@ func (cov *CoverageReport) ComputeStatementCoverage() float64 {
 		return 0
 	}
 	sum := 0.0
+	total := 0.0
 	for _, file := range cov.Files {
-		sum += file.StatementCoverage
+		hits := float64(len(file.StatementHits))
+		sum += file.StatementCoverage * hits
+		total += hits
 	}
-	return sum / float64(len(cov.Files))
+
+	return sum / total
 }
