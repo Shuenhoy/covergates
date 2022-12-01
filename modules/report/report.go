@@ -64,7 +64,7 @@ func (service *Service) MarkdownReport(source, target *core.Report) (io.Reader, 
 		return nil, err
 	}
 	link := fmt.Sprintf(
-		"%s/report/%s/%s?ref=%s",
+		"%s/report/%s/%s?gitref=%s",
 		service.Config.Server.URL(),
 		repo.SCM,
 		repo.FullName(),
