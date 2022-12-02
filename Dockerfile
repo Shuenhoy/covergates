@@ -1,5 +1,4 @@
 FROM golang:alpine AS build
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.zju.edu.cn/g' /etc/apk/repositories
 RUN apk --update add musl-dev
 RUN apk --update add util-linux-dev
 RUN apk --update add gcc g++
@@ -17,7 +16,6 @@ RUN CGO_ENABLED=1 GOOS=linux go build -o covergates ./cmd/cli
 
 FROM build as server-build
 RUN apk --update add nodejs npm
-RUN npm config set registry https://registry.npm.taobao.org
 COPY web/package.json ./web/package.json
 COPY web/package-lock.json ./web/package-lock.json
 RUN cd web && npm install 
