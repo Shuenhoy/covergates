@@ -42,6 +42,12 @@ var Command = &cli.Command{
 			Value:    "",
 			Required: false,
 		},
+		&cli.StringFlag{
+			Name:     "commit",
+			Usage:    "commit to upload the report",
+			Value:    "",
+			Required: false,
+		},
 	},
 	Action: upload,
 }
@@ -71,8 +77,12 @@ func upload(c *cli.Context) error {
 	if branch == "" {
 		branch = repo.Branch()
 	}
+	commit := c.String("commit")
+	if commit == "" {
+		commit = repo.HeadCommit()
+	}
 
-	files, err := repo.ListAllFiles(repo.HeadCommit())
+	files, err := repo.ListAllFiles(commit)
 	if err != nil {
 		return err
 	}
@@ -83,7 +93,7 @@ func upload(c *cli.Context) error {
 
 	form := util.FormData{
 		"type":   c.String("type"),
-		"commit": repo.HeadCommit(),
+		"commit": commit,
 		"ref":    branch,
 		"files":  string(filesData),
 		"root":   repo.Root(),
@@ -99,7 +109,7 @@ func upload(c *cli.Context) error {
 		c.String("report"),
 	)
 
-	log.Printf("upload commit %s, %s\n", repo.HeadCommit(), c.String("type"))
+	log.Printf("upload commit %s, %s\n", commit, c.String("type"))
 
 	request, err := util.CreatePostFormRequest(url, form)
 	if err != nil {
