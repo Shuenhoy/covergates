@@ -48,7 +48,7 @@ export function fetchSource<S extends ReportState, R extends RootState>(context:
     let params = {};
     if (context.state.current) {
       params = {
-        ref: context.state.current.commit
+        gitref: context.state.current.commit
       };
     }
     Axios.get<string>(
