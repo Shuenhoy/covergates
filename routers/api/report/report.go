@@ -320,7 +320,7 @@ func HandleComment(
 			"![treemap](%s/api/v1/reports/%s/treemap/%s?base=%s)\n\n",
 			config.Server.URL(),
 			reportID,
-			source.Reference,
+			source.Commit,
 			target.Reference,
 		))
 
