@@ -86,18 +86,17 @@ func Environ() (*Config, error) {
 }
 
 // Providers of all available SCM
-func (c *Config) Providers() []core.SCMProvider {
-	providers := make([]core.SCMProvider, 0)
+func (c *Config) Provider() core.SCMProvider {
 	if c.Gitea.Server != "" {
-		providers = append(providers, core.Gitea)
+		return core.Gitea
 	}
 	if c.Github.Server != "" {
-		providers = append(providers, core.Github)
+		return core.Github
 	}
 	if c.GitLab.Server != "" {
-		providers = append(providers, core.GitLab)
+		return core.GitLab
 	}
-	return providers
+	panic("no provider found")
 }
 
 // Port opened for the current server

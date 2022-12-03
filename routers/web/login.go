@@ -3,6 +3,9 @@ package web
 import (
 	"context"
 	"net/http"
+	"net/url"
+	"strings"
+	"time"
 
 	"github.com/covergates/covergates/config"
 	"github.com/covergates/covergates/core"
@@ -12,10 +15,11 @@ import (
 )
 
 const (
-	keyLogin   = "login"
-	keyAccess  = "access"
-	keyRefresh = "refresh"
-	keyExpires = "expires"
+	keyLogin    = "login"
+	keyAccess   = "access"
+	keyRefresh  = "refresh"
+	keyExpires  = "expires"
+	keyRedirect = "redirect"
 )
 
 // HandleLogin user
@@ -53,7 +57,14 @@ func HandleLogin(
 			c.String(400, err.Error())
 			return
 		}
-		c.Redirect(301, config.Server.BaseURL())
+
+		redirect := c.GetString(keyRedirect)
+		if redirect == "" {
+			redirect = "/"
+		}
+
+		c.Redirect(301, strings.TrimRight(config.Server.BaseURL(), "/")+redirect)
+
 	}
 }
 
@@ -70,6 +81,18 @@ func createOrUpdateUser(ctx context.Context, client core.Client, token *core.Tok
 // MiddlewareLogin context
 func MiddlewareLogin(scm core.SCMProvider, m core.LoginMiddleware) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		// if query redirect exsit, write it to cookie
+		redirect := c.Query("redirect")
+		if redirect != "" {
+			redirect, err := url.QueryUnescape(redirect)
+			if err == nil {
+				http.SetCookie(c.Writer, &http.Cookie{
+					Name:   keyRedirect,
+					Value:  redirect,
+					MaxAge: 1800,
+				})
+			}
+		}
 		middleware := m.Handler(scm)
 		h := middleware.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := r.Context()
@@ -84,6 +107,16 @@ func MiddlewareLogin(scm core.SCMProvider, m core.LoginMiddleware) gin.HandlerFu
 			c.Set(keyAccess, tok.Access)
 			c.Set(keyExpires, tok.Expires)
 			c.Set(keyRefresh, tok.Refresh)
+
+			cookie, err := r.Cookie(keyRedirect)
+			if err == nil {
+				c.Set(keyRedirect, cookie.Value)
+				http.SetCookie(w, &http.Cookie{
+					Name:    keyRedirect,
+					MaxAge:  -1,
+					Expires: time.Unix(0, 0),
+				})
+			}
 		}))
 		h.ServeHTTP(c.Writer, c.Request)
 	}

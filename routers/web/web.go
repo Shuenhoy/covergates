@@ -20,33 +20,12 @@ type Router struct {
 // RegisterRoutes for Gin
 func (r *Router) RegisterRoutes(e *gin.Engine) {
 	{
-		g := e.Group("/login")
-		g.Use(MiddlewareBindUser(r.Session))
-		g.Any("/github",
-			MiddlewareLogin(core.Github, r.LoginMiddleware),
-			HandleLogin(
-				r.Config,
-				core.Github,
-				r.SCMService,
-				r.Session,
-			),
+		scm := r.Config.Provider()
+		e.Any("/login",
+			MiddlewareBindUser(r.Session),
+			MiddlewareLogin(scm, r.LoginMiddleware),
+			HandleLogin(r.Config, scm, r.SCMService, r.Session),
 		)
-		g.Any("/gitea",
-			MiddlewareLogin(core.Gitea, r.LoginMiddleware),
-			HandleLogin(
-				r.Config,
-				core.Gitea,
-				r.SCMService,
-				r.Session,
-			),
-		)
-		g.Any("/gitlab",
-			MiddlewareLogin(core.GitLab, r.LoginMiddleware),
-			HandleLogin(
-				r.Config,
-				core.GitLab,
-				r.SCMService,
-				r.Session))
 	}
 	e.Any("/logoff", HandleLogout(r.Config, r.Session))
 	h := gin.WrapH(http.FileServer(web.New()))

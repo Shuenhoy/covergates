@@ -184,17 +184,19 @@ func HandleListAll(config *config.Config, service core.SCMService, store core.Re
 			return
 		}
 		ctx := c.Request.Context()
-		for _, provider := range config.Providers() {
-			client, err := service.Client(provider)
-			if err != nil {
-				continue
-			}
-			result, err := getRepositories(ctx, user, client, store)
-			if err != nil {
-				continue
-			}
-			repositories = append(repositories, result...)
+		provider := config.Provider()
+		client, err := service.Client(provider)
+		if err != nil {
+			c.String(500, err.Error())
+			return
 		}
+		result, err := getRepositories(ctx, user, client, store)
+		if err != nil {
+			c.String(500, err.Error())
+			return
+		}
+		repositories = append(repositories, result...)
+
 		c.JSON(200, repositories)
 	}
 }

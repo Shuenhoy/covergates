@@ -62,20 +62,20 @@ func HandleGetSCM(config *config.Config) gin.HandlerFunc {
 			c.JSON(404, providers)
 			return
 		}
-		for _, scm := range config.Providers() {
-			login := ""
-			switch scm {
-			case core.Gitea:
-				login = user.GiteaLogin
-			case core.Github:
-				login = user.GithubLogin
-			case core.GitLab:
-				login = user.GitLabLogin
-			default:
-				login = ""
-			}
-			providers[strings.ToLower(string(scm))] = login != ""
+		scm := config.Provider()
+		login := ""
+		switch scm {
+		case core.Gitea:
+			login = user.GiteaLogin
+		case core.Github:
+			login = user.GithubLogin
+		case core.GitLab:
+			login = user.GitLabLogin
+		default:
+			login = ""
 		}
+		providers[strings.ToLower(string(scm))] = login != ""
+
 		c.JSON(200, providers)
 	}
 }

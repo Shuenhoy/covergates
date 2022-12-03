@@ -37,14 +37,14 @@ func (m *middleware) Handler(scm core.SCMProvider) login.Middleware {
 			ClientSecret: m.config.Gitea.ClientSecret,
 			Server:       m.config.Gitea.Server,
 			Scope:        m.config.Gitea.Scope,
-			RedirectURL:  m.config.Server.URL() + "/login/gitea",
+			RedirectURL:  m.config.Server.URL() + "/login",
 			Client:       BasicClient(m.config.Gitea.SkipVerity),
 		}
 	case core.GitLab:
 		middleware = &gitlab.Config{
 			ClientID:     m.config.GitLab.ClientID,
 			ClientSecret: m.config.GitLab.ClientSecret,
-			RedirectURL:  m.config.Server.URL() + "/login/gitlab",
+			RedirectURL:  m.config.Server.URL() + "/login",
 			Server:       m.config.GitLab.Server,
 			Client:       BasicClient(m.config.GitLab.SkipVerity),
 			Scope:        m.config.GitLab.Scope,
